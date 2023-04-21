@@ -12,7 +12,7 @@ styles = """
         background-image: url("https://rare-gallery.com/mocahbig/1363018-Clean-wallpaper.jpg");
     }
 
-    .site, .snippet, .rel-button {
+    .site, .snippet {
         width: 50%;
         background-color: lightgray;
         padding: 20px;
@@ -22,6 +22,16 @@ styles = """
         transition: transform 0.3s ease-in-out;
     }
 
+   a:link {
+        color: yellow;
+        background-color: transparent;
+        text-decoration: none;
+    }
+    a:visited {
+        color: white;
+        background-color: transparent;
+        text-decoration: none;
+    }
     .site:hover, .snippet:hover, .rel-button:hover {
         transform: translateY(-10px);
     }
@@ -30,17 +40,25 @@ styles = """
         font-size: .8rem;
         color: green;
     }
+    
 
     .snippet {
         font-size: .9rem;
         color: gray;
         margin-bottom: 30px;
     }
-
     .rel-button {
-        cursor: pointer;
+        width: 50%;
+        background-color: lightgray;
         color: blue;
+        padding: 1px;
+        box-sizing: border-box;
+        margin: 0px 0 0px 20px;
+        border-radius: 0px;
+        transition: transform 0.3s ease-in-out;
+        cursor: pointer;
     }
+  
 
     input[type="text"] {
         padding: 10px;
@@ -65,6 +83,21 @@ styles = """
         cursor: pointer;
     }
 </style>
+<script>
+const relevant = function(query, link){
+    fetch("/relevant", {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+           "query": query,
+           "link": link
+          })
+        });
+}
+</script>
 """
 
 search_template = styles + """
