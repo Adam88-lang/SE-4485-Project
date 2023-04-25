@@ -3,25 +3,22 @@ from search import search
 from filter import Filter
 from storage import DBStorage
 import html
+import requests
 
 app = Flask(__name__)
-
 styles = """
 <style>
     body {
         background-image: url("https://rare-gallery.com/mocahbig/1363018-Clean-wallpaper.jpg");
     }
-
+    .site, .snippet, .rel-button {
     .site, .snippet {
         width: 50%;
         background-color: lightgray;
         padding: 20px;
-        box-sizing: border-box;
-        margin: 20px 0 20px 20px;
-        border-radius: 10px;
+@@ -22,6 +22,16 @@
         transition: transform 0.3s ease-in-out;
     }
-
    a:link {
         color: yellow;
         background-color: transparent;
@@ -35,12 +32,10 @@ styles = """
     .site:hover, .snippet:hover, .rel-button:hover {
         transform: translateY(-10px);
     }
-
-    .site {
+@@ -30,17 +40,25 @@
         font-size: .8rem;
         color: green;
     }
-    
 
     .snippet {
         font-size: .9rem;
@@ -48,6 +43,7 @@ styles = """
         margin-bottom: 30px;
     }
     .rel-button {
+        cursor: pointer;
         width: 50%;
         background-color: lightgray;
         color: blue;
@@ -58,28 +54,10 @@ styles = """
         transition: transform 0.3s ease-in-out;
         cursor: pointer;
     }
-  
 
     input[type="text"] {
         padding: 10px;
-        border-radius: 5px;
-        border: 1px solid gray;
-        font-size: 1.2rem;
-        width: 50%;
-        max-width: 500px;
-    }
-
-    input[type="text"]::placeholder {
-        font-size: 1.2rem;
-    }
-
-    input[type="submit"] {
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 1.2rem;
-        background-color: blue;
-        color: white;
-        border: none;
+@@ -65,6 +83,21 @@
         cursor: pointer;
     }
 </style>
@@ -112,11 +90,16 @@ search_template = styles + """
   </body>
 </html>
 """
-
 result_template = """
 <p class="site">{rank}: {link} <span class="rel-button" onclick='relevant("{query}", "{link}");'>Relevant</span></p>
 <a href="{link}">{title}</a>
 <p class="snippet">{snippet}</p>
+<div class="related">
+<h2>Related Keywords:</h2>
+<ul>
+{related}
+</ul>
+</div>
 """
 
 
@@ -131,6 +114,11 @@ def run_search(query):
     rendered = search_template
     filtered["snippet"] = filtered["snippet"].apply(lambda x: html.escape(x))
     for index, row in filtered.iterrows():
+        related = get_related_keywords(row["title"])
+        related_html = ""
+        for keyword in related:
+            related_html += f"<li>{keyword}</li>"
+        row["related"] = related_html
         rendered += result_template.format(**row)
     return rendered
 
@@ -152,3 +140,20 @@ def mark_relevant():
     storage = DBStorage()
     storage.update_relevance(query, link, 10)
     return jsonify(success=True)
+
+
+def get_related_keywords(query):
+    url = "https://www.googleapis.com/customsearch/v1"
+    params = {
+        "q": query,
+        "cx": "66244c6da00bd48d6",
+        "key": "AIzaSyD83Zli76Hqhqf1xN690Pgh9m2uRtJAdno",
+        "num": 5,
+        "fields": "items(title)"
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        results = response.json()["items"]
+        return [result["title"] for result in results]
+    else:
+        return []
