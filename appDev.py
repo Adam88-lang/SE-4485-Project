@@ -9,7 +9,7 @@ app = Flask(__name__)
 styles = """
 <style>
     body {
-        background-image: url("https://rare-gallery.com/mocahbig/1363018-Clean-wallpaper.jpg");
+
     }
     .site, .snippet, .rel-button {
     .site, .snippet {
@@ -54,6 +54,42 @@ styles = """
         transition: transform 0.3s ease-in-out;
         cursor: pointer;
     }
+    .split {
+        height: 100%;
+        width: 50%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        overflow-x: hidden;
+        padding-top: 20px;
+    }
+
+    /* Control the left side */
+    .left {
+        left: 0;
+        background-color: white;
+    }
+
+    /* Control the right side */
+    .right {
+        right: 0;
+        background-color: lightgrey;
+    }
+    .centered {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    .rounded-search {
+        border-radius: 25px;
+        border: 4px solid lightgrey;
+        background: white;
+        padding: 20px;
+        width: 400px;
+        height: 44px;
+    }
 
     input[type="text"] {
         padding: 10px;
@@ -83,22 +119,35 @@ search_template = styles + """
   <head>
   </head>
   <body>
-    <form action="/" method="post">
-      <input type="text" name="query" placeholder="Enter Search Here">
-      <input type="submit" value="Search">
-    </form>
+    <div class="split left">
+        <div class="centered">
+            <img src = "https://i.ibb.co/B2fV1m2/logo.png"
+            alt = "SearchFCG" height = "200" width = "200" />
+      
+            <form action="/" method="post">
+                <input class="rounded-search" type="text" name="query" placeholder="Enter Search Here">
+                <input type="submit" value="Search">
+            </form>
+        </div>
+    </div>
   </body>
 </html>
+<div class="split right">
 """
 result_template = """
 <p class="site">{rank}: {link} <span class="rel-button" onclick='relevant("{query}", "{link}");'>Relevant</span></p>
 <a href="{link}">{title}</a>
 <p class="snippet">{snippet}</p>
 <div class="related">
-<h2>Related Keywords:</h2>
-<ul>
-{related}
-</ul>
+    <h2>Related Keywords:</h2>
+    <ul>
+    {related}
+    </ul>
+</div>
+"""
+
+end_right_template = """
+    <p> </p>
 </div>
 """
 
@@ -120,7 +169,7 @@ def run_search(query):
             related_html += f"<li>{keyword}</li>"
         row["related"] = related_html
         rendered += result_template.format(**row)
-    return rendered
+    return rendered + end_right_template
 
 
 @app.route("/", methods=['GET', 'POST'])
