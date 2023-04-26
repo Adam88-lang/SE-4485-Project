@@ -1,3 +1,4 @@
+# Import necessary libraries
 from flask import Flask, request, jsonify
 from search import search
 from filter import Filter
@@ -5,7 +6,10 @@ from storage import DBStorage
 import html
 import requests
 
+# Initialize Flask
 app = Flask(__name__)
+
+# CSS styles and JavaScript for the web page
 styles = """
 <style>
     body {
@@ -151,11 +155,11 @@ end_right_template = """
 </div>
 """
 
-
+# Show the search form
 def show_search_form():
     return search_template
 
-
+# Perform the search and render the results
 def run_search(query):
     results = search(query)
     fi = Filter(results)
@@ -173,7 +177,7 @@ def run_search(query):
     return rendered + end_right_template
 
 
-
+# Main route to handle the search form and display results
 @app.route("/", methods=['GET', 'POST'])
 def search_form():
     if request.method == 'POST':
@@ -182,7 +186,7 @@ def search_form():
     else:
         return show_search_form()
 
-
+# Route to mark a result as relevant
 @app.route("/relevant", methods=["POST"])
 def mark_relevant():
     data = request.get_json()
@@ -192,7 +196,7 @@ def mark_relevant():
     storage.update_relevance(query, link, 10)
     return jsonify(success=True)
 
-
+# Get related keywords for a query using the Google Custom Search API
 def get_related_keywords(query):
     url = "https://www.googleapis.com/customsearch/v1"
     params = {
