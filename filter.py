@@ -43,5 +43,5 @@ class Filter():
         self.tracker_filter()
         self.content_filter()
         self.filtered = self.filtered.sort_values("rank", ascending=True)
-        self.filtered["rank"] = self.filtered["rank"].round()
+        self.filtered["rank"] = range(1, self.filtered.shape[0] + 1)
         return self.filtered
