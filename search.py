@@ -6,8 +6,15 @@ from storage import DBStorage
 from datetime import datetime
 from urllib.parse import quote_plus
 
+# Set up a cache to store search results
+search_cache = {}
+
 # Function to query search API with specified parameters and return results as a DataFrame
 def search_api(query, pages=int(RESULT_COUNT/10)):
+    # Check if results are already in cache
+    if query in search_cache:
+        return search_cache[query]
+
     results = []
     # Loop through the specified number of pages
     for i in range(0, pages):
@@ -25,6 +32,8 @@ def search_api(query, pages=int(RESULT_COUNT/10)):
     res_df = pd.DataFrame.from_dict(results)
     res_df["rank"] = list(range(1, res_df.shape[0] + 1))
     res_df = res_df[["link", "rank", "snippet", "title"]]
+    # Add results to cache
+    search_cache[query] = res_df
     return res_df
 
 # Function to scrape HTML content from a list of URLs and return the results
