@@ -6,7 +6,7 @@ from storage import DBStorage
 import html
 import requests
 import urllib.parse
-
+from functools import lru_cache
 
 # Initialize Flask
 app = Flask(__name__)
@@ -162,13 +162,20 @@ end_right_template = """
 </div>
 """
 
+
 # Show the search form
 def show_search_form():
     return search_template
 
+
+@lru_cache(maxsize=128)
+def cached_search(query):
+    return search(query)
+
+
 # Perform the search and render the results
 def run_search(query):
-    results = search(query)
+    results = cached_search(query)  # Use the cached version of search
     fi = Filter(results)
     filtered = fi.filter()
     print(f"Filtered results: {filtered}")  # Add this line to debug filtered results
@@ -189,9 +196,11 @@ def run_search(query):
 def search_form():
     if request.method == 'POST':
         query = request.form["query"]
-        return run_search(query)
+        rendered = run_search(query)
+        return rendered
     else:
         return show_search_form()
+
 
 # Route to mark a result as relevant
 @app.route("/relevant", methods=["POST"])
@@ -202,6 +211,7 @@ def mark_relevant():
     storage = DBStorage()
     storage.update_relevance(query, link, 10)
     return jsonify(success=True)
+
 
 # Get related keywords for a query using the Google Custom Search API
 def get_related_keywords(query):
@@ -220,3 +230,4 @@ def get_related_keywords(query):
         return [result["title"] for result in results]
     else:
         return []
+
