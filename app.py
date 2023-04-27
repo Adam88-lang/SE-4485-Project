@@ -5,6 +5,8 @@ from filter import Filter
 from storage import DBStorage
 import html
 import requests
+import urllib.parse
+
 
 # Initialize Flask
 app = Flask(__name__)
@@ -13,6 +15,7 @@ app = Flask(__name__)
 styles = """
 <style>
     body {
+
     }
     .site, .snippet, .rel-button {
     .site, .snippet {
@@ -39,6 +42,7 @@ styles = """
         font-size: .8rem;
         color: green;
     }
+
     .snippet {
         font-size: .9rem;
         color: gray;
@@ -65,11 +69,13 @@ styles = """
         overflow-x: hidden;
         padding-top: 20px;
     }
+
     /* Control the left side */
     .left {
         left: 0;
         background-color: white;
     }
+
     /* Control the right side */
     .right {
         right: 0;
@@ -90,6 +96,7 @@ styles = """
         width: 400px;
         height: 44px;
     }
+
     input[type="text"] {
         padding: 10px;
 @@ -65,6 +83,21 @@
@@ -97,6 +104,11 @@ styles = """
     }
 </style>
 <script>
+function submitSearch(query) {
+    const searchForm = document.getElementById('search-form');
+    searchForm.elements.namedItem('query').value = query;
+    searchForm.submit();
+}
 const relevant = function(query, link){
     fetch("/relevant", {
         method: 'POST',
@@ -122,7 +134,8 @@ search_template = styles + """
         <div class="centered">
             <img src = "https://i.ibb.co/B2fV1m2/logo.png"
             alt = "SearchFCG" height = "200" width = "200" />
-            <form action="/" method="post">
+
+            <form id="search-form" action="/" method="post">
                 <input class="rounded-search" type="text" name="query" placeholder="Enter Search Here">
                 <input type="submit" value="Search">
             </form>
@@ -165,7 +178,7 @@ def run_search(query):
         related = get_related_keywords(row["title"])
         related_html = ""
         for keyword in related:
-            related_html += f"<li>{keyword}</li>"
+            related_html += f'<li><a href="javascript:void(0)" onclick="submitSearch(\'{keyword}\')">{keyword}</a></li>'
         row["related"] = related_html
         rendered += result_template.format(**row)
     return rendered + end_right_template
@@ -193,7 +206,6 @@ def mark_relevant():
 # Get related keywords for a query using the Google Custom Search API
 def get_related_keywords(query):
     url = "https://www.googleapis.com/customsearch/v1"
-    # cx and API keys to scrape keywords from Google
     params = {
         "q": query,
         "cx": "66244c6da00bd48d6",
@@ -201,9 +213,8 @@ def get_related_keywords(query):
         "num": 5,
         "fields": "items(title)"
     }
-    # initiates request to retrieve related keywords
+
     response = requests.get(url, params=params)
-    # stores results in JSON object array if returns code 200 (successful request)
     if response.status_code == 200:
         results = response.json()["items"]
         return [result["title"] for result in results]
