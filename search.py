@@ -5,6 +5,7 @@ import pandas as pd
 from storage import DBStorage
 from datetime import datetime
 from urllib.parse import quote_plus
+from concurrent.futures import ThreadPoolExecutor
 
 # Set up a cache to store search results
 search_cache = {}
@@ -37,16 +38,12 @@ def search_api(query, pages=int(RESULT_COUNT/10)):
     return res_df
 
 # Function to scrape HTML content from a list of URLs and return the results
-def scrape_page(links):
-    html = []
-    for link in links:
-        print(link)
-        try:
-            data = requests.get(link, timeout=5)
-            html.append(data.text)
-        except RequestException:
-            html.append("")
-    return html
+def scrape_page(link):
+    try:
+        data = requests.get(link, timeout=5)
+        return data.text
+    except RequestException:
+        return ""
 
 # Main search function to retrieve search results, scrape pages, and store results in a database
 def search(query):
@@ -62,7 +59,8 @@ def search(query):
     # If query results not found in the database, use the API to fetch results
     print("No results in database.  Using the API.")
     results = search_api(query)
-    html = scrape_page(results["link"])
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        html = list(executor.map(scrape_page, results["link"]))
     results["html"] = html
     results = results[results["html"].str.len() > 0].copy()
     results["query"] = query
