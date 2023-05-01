@@ -15,7 +15,7 @@ app = Flask(__name__)
 styles = """
 <style>
     body {
-        background: #FFFFFF;
+        background: #D3D3D3;
         font-family:  sans-serif;
     }
     .site, .snippet, .rel-button {
