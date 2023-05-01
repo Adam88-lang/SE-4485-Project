@@ -43,7 +43,40 @@ styles = """
         font-size: .8rem;
         color: green;
     }
-
+    
+        .ellipse1 {
+        /* Ellipse 1 - orange*/
+        position: absolute;
+        top: calc(350px - 497px);
+        left: calc(350px - 497px);
+        width: 447px;
+        height: 418px;
+        background: #D17837;
+        border-radius: 50%;
+    }
+    .ellipse2 {
+        /* Ellipse 2 */
+        position: absolute;
+        top: 5%;
+        left: 70%;
+        width: 385px;
+        height: 340px;
+        background: #FAFAFA;
+        border-radius: 50%;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+    .ellipse3 {
+        /* Ellipse 3 */
+        position: absolute;
+        top: 60%;
+        left: 80%;
+        width: 396.95px;
+        height: 382.15px;
+        background: #FAFAFA;
+        border-radius: 50%;
+        box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+        transform: rotate(0.02deg);
+    }
 
 
     .large-rectangle {
@@ -144,6 +177,9 @@ styles = """
         width: 400px;
         height: 44px;
     }
+    .link-text {
+    font-size: 0.8rem; 
+    }
 
 
 
@@ -188,7 +224,7 @@ search_template = styles + """
         <div class="ellipse3">   </div>
         <div class="large-rectangle-initial"> 
                 <div class="search-bar-initial">
-                <img src = "https://i.ibb.co/N9K2Pk1/SFCG.jpg" alt = "SearchFCG" height = "300" width = "350" />
+                <img src = "https://i.ibb.co/N9K2Pk1/SFCG.jpg" alt = "SearchFCG" height = "400" width = "480" />
 
                 <form id="search-form" action="/" method="post">
                     <input class="rounded-search" type="text" name="query" placeholder="Enter Search Here">
@@ -220,7 +256,7 @@ result_search_template2 = """
             <div class="search-bar-area"> 
                 <div class="search-bar">
                     <img src = "https://i.ibb.co/N9K2Pk1/SFCG.jpg" alt = "SearchFCG" height = "300" 
-                    width = "350" />
+                    width = "380" />
                     <form id="search-form" action="/" method="post">
                         <input class="rounded-search" type="text" name="query" placeholder="Enter Search Here">
                         <input type="submit" value="Search">
@@ -241,10 +277,13 @@ right_side_template = """
 """
 
 relevant_result_template = """
-<p class="site">{rank}: {link} <span class="rel-button" onclick='relevant("{query}", "{link}");'></span></p>
-<a href="{link}">{title}</a>
+<p class="site">Result {rank}: </p>
+<p class="title"><a href="{link}">{title}</a></p>
 <p class="snippet">{snippet}</p>
+<p class="link"><a class="link-text" href="{link}">{link}</a></p>
 """
+
+
 
 related_result_template = """
 <div class="related-rectangles">
