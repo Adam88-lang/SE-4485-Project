@@ -43,7 +43,7 @@ styles = """
         font-size: .8rem;
         color: green;
     }
-    
+
         .ellipse1 {
         /* Ellipse 1 - orange*/
         position: absolute;
@@ -283,8 +283,6 @@ relevant_result_template = """
 <p class="link"><a class="link-text" href="{link}">{link}</a></p>
 """
 
-
-
 related_result_template = """
 <div class="related-rectangles">
     <h3>Related Keywords:</h3>
@@ -365,15 +363,29 @@ def mark_relevant():
 
 
 # Get related keywords for a query using the Google Custom Search API
+import requests
+
+import requests
+
 def get_related_keywords(query):
-    url = "https://www.googleapis.com/customsearch/v1"
+    url = "https://en.wikipedia.org/w/api.php"
     params = {
-        "q": query,
-        "cx": "66244c6da00bd48d6",
-        "key": "AIzaSyD83Zli76Hqhqf1xN690Pgh9m2uRtJAdno",
-        "num": 5,
-        "fields": "items(title)"
+        "action": "query",
+        "format": "json",
+        "list": "search",
+        "srsearch": query,
+        "srprop": "",
+        "srinfo": "",
+        "utf8": "",
     }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        results = response.json()["query"]["search"]
+        return [result["title"] for result in results]
+    else:
+        return []
+
+
 
     response = requests.get(url, params=params)
     if response.status_code == 200:
@@ -381,4 +393,3 @@ def get_related_keywords(query):
         return [result["title"] for result in results]
     else:
         return []
-
