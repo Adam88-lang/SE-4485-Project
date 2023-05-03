@@ -317,7 +317,7 @@ def run_search(query):
     filtered = fi.filter()
     print(f"Filtered results: {filtered}")  # Add this line to debug filtered results
     leftrendered = ""
-    rightrendered = ""
+    all_related_html = ""
     more_elipses_html = ""
     filtered["snippet"] = filtered["snippet"].apply(lambda x: html.escape(x))
     for index, row in filtered.iterrows():
@@ -327,7 +327,7 @@ def run_search(query):
             related_html += f'<li><a href="javascript:void(0)" onclick="submitSearch(\'{keyword}\')">{keyword}</a></li>'
         row["related"] = related_html
         leftrendered += relevant_result_template.format(**row)
-        rightrendered += related_result_template.format(**row)
+        all_related_html += related_html
         if index > 0 and index % 5 == 0:
             elipsetop1 = 500 * index / 3
             elipsetop2 = elipsetop1 + 100
@@ -336,8 +336,18 @@ def run_search(query):
             more_elipses_html += f'<div class="ellipse2" style="top:{elipsetop2}px"></div>'
             more_elipses_html += f'<div class="ellipse3" style="top:{elipsetop3}px"></div>'
 
-    full_template = result_search_template1 + more_elipses_html + result_search_template2 + leftrendered + end_search_template + right_side_template + rightrendered + end_right_template
+    right_side_template = f"""
+    <div class="related-rectangles">
+        <h3>Related Keywords:</h3>
+        <ul>
+        {all_related_html}
+        </ul>
+    </div>
+    """
+
+    full_template = result_search_template1 + more_elipses_html + result_search_template2 + leftrendered + end_search_template + right_side_template + end_right_template
     return full_template
+
 
 
 # Main route to handle the search form and display results
