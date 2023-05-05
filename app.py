@@ -156,18 +156,16 @@ styles = """
         color: gray;
         margin-bottom: 30px;
     }
-    .rel-button {
-        cursor: pointer;
-        width: 50%;
-        background-color: lightgray;
-        color: blue;
-        padding: 1px;
-        box-sizing: border-box;
-        margin: 0px 0 0px 20px;
-        border-radius: 0px;
-        transition: transform 0.3s ease-in-out;
-        cursor: pointer;
-    }
+.rel-button {
+    cursor: pointer;
+    background-color: transparent; /* Changed from lightgray to transparent */
+    color: blue;
+    padding: 1px;
+    border: none; /* Added this line to remove the border */
+    margin: 0px 0 0px 20px;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
 
     .rounded-search {
         border-radius: 25px;
@@ -281,7 +279,9 @@ relevant_result_template = """
 <p class="title"><a href="{link}">{title}</a></p>
 <p class="snippet">{snippet}</p>
 <p class="link"><a class="link-text" href="{link}">{link}</a></p>
+<button class="rel-button" onclick="relevant('{query}', '{link}')">Mark as Relevant</button>
 """
+
 
 related_result_template = """
 <div class="related-rectangles">
